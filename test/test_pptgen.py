@@ -1,4 +1,4 @@
-from test.conftest import test_config
+from conftest import test_config
 
 import pytest
 

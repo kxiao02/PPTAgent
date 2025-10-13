@@ -276,7 +276,7 @@ def average_distance(
     """
     import torch
 
-    similarity = torch.tensor(similarity)
+    similarity = torch.as_tensor(similarity)
     if idx in cluster_idx:
         return 0
     total_similarity = 0
@@ -298,7 +298,7 @@ def get_cluster(similarity: list[list[float]], sim_bound: float = 0.65):
     """
     import torch
 
-    similarity = torch.tensor(similarity)
+    similarity = torch.as_tensor(similarity)
     sim_copy = similarity.clone()
     num_points = sim_copy.shape[0]
     clusters = []

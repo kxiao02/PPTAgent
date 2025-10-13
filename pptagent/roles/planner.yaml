@@ -44,7 +44,7 @@ template: |
   Document Structure:
   {{ document_overview }}
 
-  Output:
+  Output: Give your output in JSON format.
 jinja_args:
   - num_slides
   - document_overview

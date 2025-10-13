@@ -6,6 +6,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
+ENV HF_ENDPOINT=https://hf-mirror.com
+ENV PIP_INDEX_URL=https://mirrors.aliyun.com/pypi/simple
+ENV PIP_TRUSTED_HOST=mirrors.aliyun.com
 
 RUN apt update
 
@@ -94,13 +97,13 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
 RUN apt install -y nodejs fish npm
 
 # model cache
-RUN uv pip install --system huggingface_hub
+RUN uv pip install --system -i https://mirrors.aliyun.com/pypi/simple huggingface_hub
 RUN huggingface-cli download google/vit-base-patch16-224-in21k
 RUN huggingface-cli download julien-c/fasttext-language-id
 
 ARG CACHE_DATE=UNKNOWN
 RUN git clone https://github.com/icip-cas/PPTAgent
-RUN uv pip install --system "pptagent[full]"
+RUN uv pip install --system -i https://mirrors.aliyun.com/pypi/simple "pptagent[full]"
 RUN npm install --prefix /PPTAgent/pptagent_ui
 
 WORKDIR /PPTAgent
