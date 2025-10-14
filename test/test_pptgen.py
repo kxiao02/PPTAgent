@@ -1,7 +1,7 @@
-from conftest import test_config
 from os.path import join
 
 import pytest
+from conftest import test_config
 
 from pptagent.document import Document
 from pptagent.multimodal import ImageLabler

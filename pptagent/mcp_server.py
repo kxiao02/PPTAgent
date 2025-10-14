@@ -83,7 +83,10 @@ class PPTAgentServer(PPTAgent):
             logger.error(msg)
             raise Exception(msg)
 
-        if vision_model is not language_model and not vision_model.to_sync().test_connection():
+        if (
+            vision_model is not language_model
+            and not vision_model.to_sync().test_connection()
+        ):
             msg = "Unable to connect to the vision model, please check PPTAGENT_VISION_MODEL configuration"
             logger.error(msg)
             raise Exception(msg)
