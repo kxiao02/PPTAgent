@@ -1,4 +1,5 @@
 from conftest import test_config
+from os.path import join
 
 import pytest
 
@@ -6,7 +7,7 @@ from pptagent.document import Document
 from pptagent.multimodal import ImageLabler
 from pptagent.pptgen import PPTAgent
 from pptagent.presentation import Presentation
-from os.path import join
+from test.conftest import test_config
 
 
 @pytest.mark.asyncio
