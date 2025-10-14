@@ -26,9 +26,10 @@ template: |
               "content": "content"
           }
       ],
-      "metadata": {
-          `key`: `value` // leave it empty if no metadata is present
-      },
+      "metadata": [
+          {"name": "author", "value": "John Doe"},
+          {"name": "date", "value": "2024-01-01"}
+      ]  // use empty array [] if no metadata is present
   }
 
   Input:
