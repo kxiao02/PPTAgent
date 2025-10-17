@@ -136,6 +136,8 @@ def get_image_model(device: str = None):
     )
 
 
+
+
 async def parse_pdf(pdf_path: str, output_folder: str):
     """
     Parse a PDF file and extract text and images.
@@ -153,6 +155,9 @@ async def parse_pdf(pdf_path: str, output_folder: str):
     async with aiofiles.open(pdf_path, "rb") as f:
         pdf_content = await f.read()
 
+    # Get DPI from environment variable, default to 400
+    dpi = int(os.getenv("MINERU_DPI", "400"))
+
     data = aiohttp.FormData()
     data.add_field(
         "files",
@@ -162,6 +167,7 @@ async def parse_pdf(pdf_path: str, output_folder: str):
     )
     data.add_field("return_images", "True")
     data.add_field("response_format_zip", "True")
+    data.add_field("dpi", str(dpi))
 
     async with aiohttp.ClientSession() as session:
         async with session.post(MINERU_API, data=data) as response:

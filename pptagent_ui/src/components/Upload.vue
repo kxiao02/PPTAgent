@@ -24,6 +24,7 @@
       <div class="selectors">
         <div class="pages-selection">
           <select v-model="selectedPages">
+            <option :value="null">Auto (Dynamic)</option>
             <option v-for="page in pagesOptions" :key="page" :value="page">{{ page }} 页</option>
           </select>
         </div>
@@ -42,7 +43,7 @@ export default {
     return {
       pptxFile: null,
       pdfFile: null,
-      selectedPages: 6,
+      selectedPages: null,  // Default to Auto (Dynamic)
       pagesOptions: Array.from({ length: 12 }, (_, i) => i + 3),
       isPptxEnabled:true
     }
@@ -78,7 +79,9 @@ export default {
         formData.append('pptxFile', this.pptxFile);
       }
       formData.append('pdfFile', this.pdfFile);
-      formData.append('numberOfPages', this.selectedPages);
+      if (this.selectedPages !== null) {
+        formData.append('numberOfPages', this.selectedPages);
+      }
 
       try {
         const uploadResponse = await this.$axios.post('/api/upload', formData, {

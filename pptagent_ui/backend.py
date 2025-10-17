@@ -89,13 +89,14 @@ class ProgressManager:
         )
 
     async def fail_stage(self, error_message: str):
-        await send_progress(
-            active_connections[self.task_id],
-            f"{self.stages[self.current_stage]} Error: {error_message}",
-            100,
-        )
+        if self.task_id in active_connections:
+            await send_progress(
+                active_connections[self.task_id],
+                f"{self.stages[self.current_stage]} Error: {error_message}",
+                100,
+            )
+            active_connections.pop(self.task_id, None)
         self.failed = True
-        active_connections.pop(self.task_id, None)
         if self.debug:
             logger.error(
                 f"{self.task_id}: {self.stages[self.current_stage]} Error: {error_message}"
@@ -107,7 +108,7 @@ async def create_task(
     pptxFile: UploadFile = File(None),
     pdfFile: UploadFile = File(None),
     topic: str = Form(None),
-    numberOfPages: int = Form(...),
+    numberOfPages: int = Form(None),
 ):
     task_id = datetime.now().strftime("20%y-%m-%d") + "/" + str(uuid.uuid4())
     logger.info(f"task created: {task_id}")
