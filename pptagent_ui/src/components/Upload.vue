@@ -229,11 +229,12 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   min-height: 100vh;
   background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%);
-  padding: 40px 20px;
+  padding: 40px 20px 60px;
   box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .upload-options {
@@ -246,6 +247,8 @@ export default {
   padding: 40px;
   border-radius: 15px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  margin-bottom: 40px;
 }
 
 .section-label {
@@ -452,8 +455,14 @@ export default {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .upload-container {
+    padding: 20px 15px 60px;
+  }
+
   .upload-options {
     padding: 25px;
+    margin-top: 0;
+    margin-bottom: 20px;
   }
 
   .template-mode-toggle {
@@ -476,6 +485,10 @@ export default {
   .next-button {
     max-width: 100%;
     font-size: 16px;
+  }
+
+  .template-preview img {
+    max-height: 200px;
   }
 }
 </style>
