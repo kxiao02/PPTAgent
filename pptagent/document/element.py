@@ -89,15 +89,12 @@ class Table(Media):
         try:
             get_html_table_image(self.markdown_content, self.path)
         except FileNotFoundError as e:
-            if "Chrome" in str(e):
-                logger.warning(
-                    "Chrome/Chromium not found - skipping table image generation. "
-                    "Install chromium-browser to enable table rendering: "
-                    "sudo apt install chromium-browser"
-                )
-                self.path = None  # Mark table as having no image
-            else:
-                raise
+            logger.warning(
+                "Renderer dependency (e.g., Chrome/Chromium) not found - skipping table image generation. "
+                "Install chromium-browser to enable table rendering: "
+                "sudo apt install chromium-browser"
+            )
+            self.path = None  # Mark table as having no image
 
     async def get_caption(self, language_model: AsyncLLM):
         if self.caption is None:
