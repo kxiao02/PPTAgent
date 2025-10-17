@@ -136,8 +136,6 @@ def get_image_model(device: str = None):
     )
 
 
-
-
 async def parse_pdf(pdf_path: str, output_folder: str):
     """
     Parse a PDF file and extract text and images.
