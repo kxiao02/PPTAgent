@@ -21,7 +21,7 @@ pip install -e ".[full]"
 pip install -e .
 
 # Install custom python-pptx fork (REQUIRED)
-pip install python-pptx@git+https://github.com/Force1ess/python-pptx@219513d7d81a61961fc541578c1857d08b43aa2a
+pip install 'python-pptx @ git+https://github.com/Force1ess/python-pptx@219513d7d81a61961fc541578c1857d08b43aa2a'
 ```
 
 ### Testing
