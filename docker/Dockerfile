@@ -7,8 +7,10 @@ ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
 ENV HF_ENDPOINT=https://hf-mirror.com
-ENV PIP_INDEX_URL=https://mirrors.aliyun.com/pypi/simple
-ENV PIP_TRUSTED_HOST=mirrors.aliyun.com
+ARG PIP_INDEX_URL=https://mirrors.aliyun.com/pypi/simple
+ARG PIP_TRUSTED_HOST=mirrors.aliyun.com
+ENV PIP_INDEX_URL=${PIP_INDEX_URL}
+ENV PIP_TRUSTED_HOST=${PIP_TRUSTED_HOST}
 
 RUN apt update
 
