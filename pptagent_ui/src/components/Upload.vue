@@ -1,60 +1,60 @@
 <template>
-  <!-- Upload form -->
   <div class="upload-container">
+    <h1 class="main-title">PPT 自动生成</h1>
+
     <div class="upload-options">
-      <!-- Row 1: Template Selection Mode Toggle -->
+      <!-- 模板选择模式 -->
       <div class="template-mode-toggle">
         <button
           @click="useCustomTemplate = true"
           :class="{'active': useCustomTemplate}"
           class="mode-button">
-          📤 Upload Custom Template
+          上传自定义模板
         </button>
         <button
           @click="useCustomTemplate = false"
           :class="{'active': !useCustomTemplate}"
           class="mode-button">
-          📁 Use Built-in Template
+          使用内置模板
         </button>
       </div>
 
-      <!-- Row 2: Template Selection (conditional) -->
+      <!-- 内置模板选择 -->
       <div v-if="!useCustomTemplate" class="template-selection">
-        <label class="section-label">Select a Template:</label>
+        <label class="section-label">选择模板</label>
         <select v-model="selectedTemplate" class="template-selector">
-          <option value="" disabled>-- Choose a template --</option>
+          <option value="" disabled>-- 请选择模板 --</option>
           <option
             v-for="template in availableTemplates"
             :key="template.name"
             :value="template.name">
-            {{ template.name }}
-            <span v-if="template.description"> - {{ truncate(template.description, 50) }}</span>
+            {{ template.name }} - {{ template.description }}
           </option>
         </select>
 
-        <!-- Template Preview -->
+        <!-- 模板预览 -->
         <div v-if="selectedTemplate && getTemplateInfo(selectedTemplate)" class="template-info">
           <div class="template-description">
-            <strong>{{ selectedTemplate }}</strong>: {{ getTemplateInfo(selectedTemplate).description }}
+            {{ getTemplateInfo(selectedTemplate).description }}
           </div>
           <div v-if="getTemplateInfo(selectedTemplate).has_preview" class="template-preview">
             <img
               :src="`/api/template-preview/${selectedTemplate}`"
-              :alt="`${selectedTemplate} preview`"
+              :alt="`${selectedTemplate} 预览`"
               @error="handleImageError" />
           </div>
           <div v-else class="no-preview">
-            <span>📄 No preview available</span>
+            <span>暂无预览</span>
           </div>
         </div>
       </div>
 
-      <!-- Row 3: Custom PPTX Upload (conditional) -->
+      <!-- 自定义 PPTX 上传 -->
       <div v-if="useCustomTemplate" class="upload-buttons">
         <div class="upload-section">
           <label for="pptx-upload" class="upload-label">
-            Upload PPTX Template
-            <span v-if="pptxFile" class="uploaded-symbol">✔️</span>
+            上传 PPTX 模板
+            <span v-if="pptxFile" class="uploaded-symbol">✓</span>
           </label>
           <input
             type="file"
@@ -64,11 +64,11 @@
         </div>
       </div>
 
-      <!-- Row 4: PDF Upload (always shown) -->
+      <!-- PDF 上传 -->
       <div class="upload-section pdf-upload">
         <label for="pdf-upload" class="upload-label">
-          Upload PDF Content
-          <span v-if="pdfFile" class="uploaded-symbol">✔️</span>
+          上传 PDF 内容
+          <span v-if="pdfFile" class="uploaded-symbol">✓</span>
         </label>
         <input
           type="file"
@@ -77,22 +77,22 @@
           accept=".pdf" />
       </div>
 
-      <!-- Row 5: Page Count Selection -->
+      <!-- 页数选择 -->
       <div class="selectors">
         <div class="pages-selection">
-          <label class="section-label">Number of Pages:</label>
+          <label class="section-label">页数</label>
           <select v-model="selectedPages">
-            <option :value="null">Auto (Dynamic)</option>
+            <option :value="null">自动</option>
             <option v-for="page in pagesOptions" :key="page" :value="page">
-              {{ page }} pages
+              {{ page }} 页
             </option>
           </select>
         </div>
       </div>
 
-      <!-- Row 6: Submit Button -->
+      <!-- 提交按钮 -->
       <button @click="goToGenerate" class="next-button" :disabled="!canSubmit">
-        {{ canSubmit ? 'Generate Presentation' : 'Please complete all required fields' }}
+        {{ canSubmit ? '开始生成' : '请完成必填项' }}
       </button>
     </div>
   </div>
@@ -171,18 +171,18 @@ export default {
         await this.$axios.get('/');
       } catch (error) {
         console.error(error);
-        alert('Backend is not running or too busy. Your task will not be processed.');
+        alert('后端服务未运行或繁忙，任务无法处理');
         return;
       }
 
       // Validation
       if (!this.canSubmit) {
         if (!this.pdfFile) {
-          alert('Please upload a PDF file.');
+          alert('请上传 PDF 文件');
         } else if (this.useCustomTemplate && !this.pptxFile) {
-          alert('Please upload a PPTX template file.');
+          alert('请上传 PPTX 模板文件');
         } else if (!this.useCustomTemplate && !this.selectedTemplate) {
-          alert('Please select a template.');
+          alert('请选择模板');
         }
         return;
       }
@@ -217,7 +217,7 @@ export default {
         this.$router.push({ name: 'Generate', state: { taskId: taskId } });
       } catch (error) {
         console.error("Upload error:", error);
-        alert(`Failed to upload files: ${error.response?.data?.detail || error.message}`);
+        alert(`上传失败：${error.response?.data?.detail || error.message}`);
       }
     }
   }
@@ -225,6 +225,10 @@ export default {
 </script>
 
 <style scoped>
+* {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
 .upload-container {
   display: flex;
   flex-direction: column;
@@ -232,30 +236,37 @@ export default {
   justify-content: flex-start;
   min-height: 100vh;
   background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%);
-  padding: 40px 20px 60px;
+  padding: 20px 20px 40px;
   box-sizing: border-box;
   overflow-y: auto;
+}
+
+.main-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 10px 0 20px;
+  text-align: center;
 }
 
 .upload-options {
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: 20px;
   width: 100%;
   max-width: 800px;
   background: white;
-  padding: 40px;
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
-  margin-bottom: 40px;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
 }
 
 .section-label {
   font-size: 14px;
   font-weight: 600;
   color: #333;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   display: block;
 }
 
@@ -316,29 +327,29 @@ export default {
 }
 
 .template-info {
-  padding: 15px;
+  padding: 12px;
   background: #f9f9f9;
   border-radius: 8px;
   border: 1px solid #eee;
 }
 
 .template-description {
-  color: #666;
-  font-size: 14px;
-  margin-bottom: 10px;
-  line-height: 1.5;
+  color: #555;
+  font-size: 13px;
+  margin-bottom: 8px;
+  line-height: 1.6;
 }
 
 .template-preview {
-  margin-top: 10px;
+  margin-top: 8px;
   text-align: center;
 }
 
 .template-preview img {
   max-width: 100%;
-  max-height: 300px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-height: 200px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   object-fit: contain;
 }
 
@@ -456,13 +467,18 @@ export default {
 /* Responsive Design */
 @media (max-width: 768px) {
   .upload-container {
-    padding: 20px 15px 60px;
+    padding: 15px 10px 40px;
+  }
+
+  .main-title {
+    font-size: 24px;
+    margin: 5px 0 15px;
   }
 
   .upload-options {
-    padding: 25px;
-    margin-top: 0;
-    margin-bottom: 20px;
+    padding: 20px;
+    gap: 15px;
+    margin-bottom: 15px;
   }
 
   .template-mode-toggle {
@@ -484,11 +500,11 @@ export default {
 
   .next-button {
     max-width: 100%;
-    font-size: 16px;
+    font-size: 15px;
   }
 
   .template-preview img {
-    max-height: 200px;
+    max-height: 150px;
   }
 }
 </style>
