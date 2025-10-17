@@ -154,8 +154,10 @@ async def parse_pdf(pdf_path: str, output_folder: str):
         pdf_content = await f.read()
 
     # Get DPI from environment variable, default to 400
-    dpi = int(os.getenv("MINERU_DPI", "400"))
-
+    try:
+        dpi = int(os.getenv("MINERU_DPI", "400"))
+    except (TypeError, ValueError):
+        dpi = 400
     data = aiohttp.FormData()
     data.add_field(
         "files",
