@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.11"
 resolution-markers = [
     "python_full_version >= '3.12' and sys_platform == 'darwin'",
@@ -396,7 +396,7 @@ version = "3.24.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
-    { name = "docstring-parser", marker = "python_full_version < '4.0'" },
+    { name = "docstring-parser", marker = "python_full_version < '4'" },
     { name = "rich" },
     { name = "rich-rst" },
 ]
@@ -1952,6 +1952,15 @@ dependencies = [
     { name = "rich" },
     { name = "socksio" },
     { name = "tenacity" },
+    { name = "uvicorn" },
+]
+
+[package.optional-dependencies]
+full = [
+    { name = "einops" },
+    { name = "fasttext" },
+    { name = "huggingface-hub" },
+    { name = "peft" },
     { name = "timm" },
     { name = "uvicorn" },
 ]

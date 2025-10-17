@@ -5,7 +5,7 @@ template: |
   Review the provided document overview, and create a detailed, structured presentation outline by following these steps:
   1. For each slide, select content from the relevant section or subsection, and include the most relevant images (if available) as the content source. Each slide should only present content and images that are relevant to its purpose.
   2. Prioritize the important sections of the document, such as detailed methodologies and key experimental results that are well-suited for presentation format. Exclude sections that are less relevant or inappropriate for presentations, such as abstracts and references.
-  3. Ensure the total number of slides matches the required number of slides. Do not include functional slides such as opening, table of contents, or endings.
+  3. {% if num_slides %}Ensure the total number of slides matches the required number of slides ({{ num_slides }} slides).{% else %}Determine an appropriate number of slides based on the document content and complexity. Aim for 10-20 slides for typical documents, adjusting based on content density.{% endif %} Do not include functional slides such as opening, table of contents, or endings.
   4. Logically organize the presentation outline into a hierarchical structure of topics and slides. Typically, the overall presentation should be organized into 3-7 topics (eg. Introduction, Methodology, Results, Conclusion). Slides within the same topic should be presented in a continuous manner.
   5. The position of images in the document only indicates their display location, not which section or subsection they belong to. Image selection must prioritize relevance as the primary consideration, and reduce repetitive use of images - each image should not be used more than three times.
 
@@ -39,12 +39,12 @@ template: |
   }
 
   Input:
-  Required Number of Slides: {{ num_slides }}
+  {% if num_slides %}Required Number of Slides: {{ num_slides }}{% else %}Required Number of Slides: Determine automatically based on content{% endif %}
 
   Document Structure:
   {{ document_overview }}
 
-  Output:
+  Output: Give your output in JSON format.
 jinja_args:
   - num_slides
   - document_overview

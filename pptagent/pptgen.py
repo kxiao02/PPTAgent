@@ -238,15 +238,23 @@ class PPTGen(ABC):
 
     async def generate_outline(
         self,
-        num_slides: int,
+        num_slides: int | None,
         source_doc: Document,
     ):
         """
         Asynchronously generate an outline for the presentation.
+
+        Args:
+            num_slides (int | None): Target number of slides, or None for dynamic determination
+            source_doc (Document): The source document to create outline from
         """
         assert self._initialized, (
             "AsyncPPTAgent not initialized, call `set_reference` first"
         )
+        if num_slides is None:
+            logger.info("Using dynamic slide count - LLM will determine optimal number")
+        else:
+            logger.info(f"Target slide count: {num_slides}")
         _, outline = await self.staffs["planner"](
             num_slides=num_slides,
             document_overview=source_doc.get_overview(),

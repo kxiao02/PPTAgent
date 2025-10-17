@@ -57,20 +57,40 @@ class PPTAgentServer(PPTAgent):
         self.slides = []
         self.layout: Layout | None = None
         self.editor_output: EditorOutput | None = None
-        model = AsyncLLM(
+
+        # Initialize language model
+        language_model = AsyncLLM(
             os.getenv("PPTAGENT_MODEL"),
             os.getenv("PPTAGENT_API_BASE"),
             os.getenv("PPTAGENT_API_KEY"),
         )
-        workspace = os.getenv("WORKSPACE", None)
-        if workspace is not None:
-            os.chdir(workspace)
 
-        if not model.to_sync().test_connection():
-            msg = "Unable to connect to the model, please set the PPTAGENT_MODEL, PPTAGENT_API_BASE, and PPTAGENT_API_KEY environment variables correctly"
+        # Initialize vision model (defaults to language model if not specified)
+        vision_model_name = os.getenv("PPTAGENT_VISION_MODEL")
+        if vision_model_name:
+            vision_model = AsyncLLM(
+                vision_model_name,
+                os.getenv("PPTAGENT_API_BASE"),
+                os.getenv("PPTAGENT_API_KEY"),
+            )
+        else:
+            vision_model = language_model
+
+        # Test connections
+        if not language_model.to_sync().test_connection():
+            msg = "Unable to connect to the language model, please set the PPTAGENT_MODEL, PPTAGENT_API_BASE, and PPTAGENT_API_KEY environment variables correctly"
             logger.error(msg)
             raise Exception(msg)
-        super().__init__(language_model=model, vision_model=model)
+
+        if (
+            vision_model is not language_model
+            and not vision_model.to_sync().test_connection()
+        ):
+            msg = "Unable to connect to the vision model, please check PPTAGENT_VISION_MODEL configuration"
+            logger.error(msg)
+            raise Exception(msg)
+
+        super().__init__(language_model=language_model, vision_model=vision_model)
         # load templates, a directory containing pptx, json, and description for each template
         templates_dir = Path(package_join("templates"))
         templates = [p for p in templates_dir.iterdir() if p.is_dir()]

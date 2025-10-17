@@ -89,13 +89,14 @@ class ProgressManager:
         )
 
     async def fail_stage(self, error_message: str):
-        await send_progress(
-            active_connections[self.task_id],
-            f"{self.stages[self.current_stage]} Error: {error_message}",
-            100,
-        )
+        if self.task_id in active_connections:
+            await send_progress(
+                active_connections[self.task_id],
+                f"{self.stages[self.current_stage]} Error: {error_message}",
+                100,
+            )
+            active_connections.pop(self.task_id, None)
         self.failed = True
-        active_connections.pop(self.task_id, None)
         if self.debug:
             logger.error(
                 f"{self.task_id}: {self.stages[self.current_stage]} Error: {error_message}"
@@ -107,7 +108,7 @@ async def create_task(
     pptxFile: UploadFile = File(None),
     pdfFile: UploadFile = File(None),
     topic: str = Form(None),
-    numberOfPages: int = Form(...),
+    numberOfPages: int = Form(None),
 ):
     task_id = datetime.now().strftime("20%y-%m-%d") + "/" + str(uuid.uuid4())
     logger.info(f"task created: {task_id}")
@@ -275,11 +276,13 @@ async def ppt_gen(task_id: str, rerun=False):
 
         # pdf parsing
         if not os.path.exists(join(parsedpdf_dir, "source.md")):
-            text_content = parse_pdf(
+            await parse_pdf(
                 join(RUNS_DIR, "pdf", pdf_md5, "source.pdf"),
                 parsedpdf_dir,
-                models.marker_model,
             )
+            text_content = open(
+                join(parsedpdf_dir, "source.md"), encoding="utf-8"
+            ).read()
         else:
             text_content = open(
                 join(parsedpdf_dir, "source.md"), encoding="utf-8"
