@@ -15,6 +15,7 @@ Makefile
 node_modules
 human_eval
 resource/
+output/
 
 # Copy from vuejs
 
@@ -43,3 +44,5 @@ dist-ssr
 *.sln
 *.sw?
 CLAUDE.md
+*.jpg
+*.deb
