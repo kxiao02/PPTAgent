@@ -14,13 +14,13 @@ template: |
     Image Fit: Assess the relevance of the images to the theme and their enhancement to the content; if highly relevant and beneficial, prioritize layouts with images; if relevance is low or text dominates, a text-only layout may be chosen.
     If no images are provided, use the text-only layout.
   - Output:
-    - Layout name.
+    - Layout name (CRITICAL: You MUST copy the EXACT complete name from Layout Options, character-by-character, including all punctuation and the :text or :image suffix. Do not abbreviate, paraphrase, or modify the name in any way).
     - Detailed Reasoning: Analyze the fit between the layout and content (element count, text length, theme alignment) and the fit between images and content (relevance and enhancement), explaining why this layout was chosen and whether images are used.
 
   Example Output:
   {
       "reasoning": "The current slide is Slide 2, themed \"team introduction,\" with the goal of showcasing team members and their backgrounds. The text (50 characters) is concise and close to the middle of the Image-Text layout's character range (30-100), making it suitable for summarizing team details. The provided team photo is highly relevant to the theme, offering a visual representation of the team that significantly enhances audience understanding and engagement, aligning with the rule to prioritize image-inclusive layouts when applicable. The Image-Text layout, with 1 image slot and 1 text slot, perfectly matches the input needs. In contrast, Opening:Text (100-300 characters) is better suited for a text-heavy opening slide, while Stage Analysis (2 images, 1 text) is excessive for a single image and short text, making Image-Text the optimal choice.",
-      "layout": "Image-Text"
+      "layout": "Image-Text:image"
   }
 
   Input:

@@ -89,13 +89,14 @@ class ProgressManager:
         )
 
     async def fail_stage(self, error_message: str):
-        await send_progress(
-            active_connections[self.task_id],
-            f"{self.stages[self.current_stage]} Error: {error_message}",
-            100,
-        )
+        if self.task_id in active_connections:
+            await send_progress(
+                active_connections[self.task_id],
+                f"{self.stages[self.current_stage]} Error: {error_message}",
+                100,
+            )
+            active_connections.pop(self.task_id, None)
         self.failed = True
-        active_connections.pop(self.task_id, None)
         if self.debug:
             logger.error(
                 f"{self.task_id}: {self.stages[self.current_stage]} Error: {error_message}"
@@ -107,24 +108,55 @@ async def create_task(
     pptxFile: UploadFile = File(None),
     pdfFile: UploadFile = File(None),
     topic: str = Form(None),
-    numberOfPages: int = Form(...),
+    numberOfPages: int = Form(None),
+    selectedTemplate: str = Form("default"),
 ):
     task_id = datetime.now().strftime("20%y-%m-%d") + "/" + str(uuid.uuid4())
     logger.info(f"task created: {task_id}")
     os.makedirs(join(RUNS_DIR, task_id))
-    task = {
-        "numberOfPages": numberOfPages,
-        "pptx": "default_template",
-    }
+
+    # Determine which template to use
     if pptxFile is not None:
+        # User uploaded custom template
         pptx_blob = await pptxFile.read()
         pptx_md5 = hashlib.md5(pptx_blob).hexdigest()
-        task["pptx"] = pptx_md5
+        template_ref = pptx_md5
+
+        # Save uploaded template
         pptx_dir = join(RUNS_DIR, "pptx", pptx_md5)
         if not os.path.exists(pptx_dir):
             os.makedirs(pptx_dir, exist_ok=True)
             with open(join(pptx_dir, "source.pptx"), "wb") as f:
                 f.write(pptx_blob)
+    else:
+        # Use selected template (from any configured source)
+        import shutil
+        from pptagent.template_utils import find_template
+
+        template_ref = selectedTemplate
+        template_path = find_template(selectedTemplate)
+
+        # Verify template exists
+        if template_path is None:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Template '{selectedTemplate}' not found. Available templates can be listed via /api/templates"
+            )
+
+        # Copy template to pptx directory
+        pptx_dir = join(RUNS_DIR, "pptx", selectedTemplate)
+        if not os.path.exists(pptx_dir):
+            os.makedirs(pptx_dir, exist_ok=True)
+            # Copy all template files
+            for file in ["source.pptx", "slide_induction.json", "image_stats.json"]:
+                src = template_path / file
+                if src.exists():
+                    shutil.copy2(src, join(pptx_dir, file))
+
+    task = {
+        "numberOfPages": numberOfPages,
+        "pptx": template_ref,
+    }
     if pdfFile is not None:
         pdf_blob = await pdfFile.read()
         pdf_md5 = hashlib.md5(pdf_blob).hexdigest()
@@ -194,6 +226,48 @@ async def feedback(request: Request):
 @app.get("/")
 async def hello():
     return {"message": "Hello, World!"}
+
+
+@app.get("/api/templates")
+async def list_templates():
+    """List all available templates from all sources"""
+    from pptagent.template_utils import discover_templates
+
+    # Discover templates from all configured sources
+    template_infos = discover_templates(sort_by="name")
+
+    # Convert to API response format
+    templates = [
+        {
+            "name": info.name,
+            "description": info.description,
+            "has_preview": info.has_preview,
+            "slide_count": info.slide_count,
+            "source": info.source,
+        }
+        for info in template_infos
+    ]
+
+    return {"templates": templates}
+
+
+@app.get("/api/template-preview/{template_name}")
+async def get_template_preview(template_name: str):
+    """Serve template preview image"""
+    from pptagent.template_utils import find_template
+
+    # Find template from all configured sources
+    template_path = find_template(template_name)
+
+    if template_path is None:
+        raise HTTPException(status_code=404, detail=f"Template '{template_name}' not found")
+
+    preview_path = template_path / "preview.png"
+
+    if not preview_path.exists():
+        raise HTTPException(status_code=404, detail="Preview image not found")
+
+    return FileResponse(preview_path, media_type="image/png")
 
 
 async def ppt_gen(task_id: str, rerun=False):
@@ -275,10 +349,13 @@ async def ppt_gen(task_id: str, rerun=False):
 
         # pdf parsing
         if not os.path.exists(join(parsedpdf_dir, "source.md")):
-            text_content = parse_pdf(
+            await parse_pdf(
                 join(RUNS_DIR, "pdf", pdf_md5, "source.pdf"),
                 parsedpdf_dir,
             )
+            text_content = open(
+                join(parsedpdf_dir, "source.md"), encoding="utf-8"
+            ).read()
         else:
             text_content = open(
                 join(parsedpdf_dir, "source.md"), encoding="utf-8"

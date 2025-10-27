@@ -153,6 +153,11 @@ async def parse_pdf(pdf_path: str, output_folder: str):
     async with aiofiles.open(pdf_path, "rb") as f:
         pdf_content = await f.read()
 
+    # Get DPI from environment variable, default to 400
+    try:
+        dpi = int(os.getenv("MINERU_DPI", "400"))
+    except (TypeError, ValueError):
+        dpi = 400
     data = aiohttp.FormData()
     data.add_field(
         "files",
@@ -162,6 +167,7 @@ async def parse_pdf(pdf_path: str, output_folder: str):
     )
     data.add_field("return_images", "True")
     data.add_field("response_format_zip", "True")
+    data.add_field("dpi", str(dpi))
 
     async with aiohttp.ClientSession() as session:
         async with session.post(MINERU_API, data=data) as response:
@@ -276,7 +282,7 @@ def average_distance(
     """
     import torch
 
-    similarity = torch.tensor(similarity)
+    similarity = torch.as_tensor(similarity)
     if idx in cluster_idx:
         return 0
     total_similarity = 0
@@ -298,7 +304,7 @@ def get_cluster(similarity: list[list[float]], sim_bound: float = 0.65):
     """
     import torch
 
-    similarity = torch.tensor(similarity)
+    similarity = torch.as_tensor(similarity)
     sim_copy = similarity.clone()
     num_points = sim_copy.shape[0]
     clusters = []

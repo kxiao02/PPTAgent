@@ -1,1 +1,1 @@
-A LaTeX Beamer-style template suitable for academic presentations, technical talks, and conferences. Uses typical Beamer layout and typography for slides with equations, figures, and structured sections.
+LaTeX Beamer 风格模板，适用于学术演讲、技术报告和会议展示

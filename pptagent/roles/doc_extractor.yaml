@@ -27,8 +27,9 @@ template: |
           }
       ],
       "metadata": {
-          `key`: `value` // leave it empty if no metadata is present
-      },
+          "author": "John Doe",
+          "date": "2024-01-01"
+      }  // use empty object {} if no metadata is present
   }
 
   Input:

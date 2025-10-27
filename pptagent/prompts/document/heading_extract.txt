@@ -8,8 +8,9 @@ Your task:
    - If some headings lack numbering (while others may have it), rely on semantic context to determine if they are top-level.
    - Extract the heading text within the <title> tags. For example, from "■ <title>大数据安全与隐私保护</title>", extract "大数据安全与隐私保护". From "├─ <title>2 大数据研究概述</title>", extract "2 大数据研究概述".
 3. The number of characters in each splited chunk should be less than 32768.
+4. Return your response in JSON format following the structure shown in the example below.
 
-Example Output:
+Example Output (JSON format):
 {
     "headings": ["header 1", "header2"]
 }

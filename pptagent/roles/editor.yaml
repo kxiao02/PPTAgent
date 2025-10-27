@@ -47,7 +47,7 @@ template: |
   {{language}}
 
 
-  Output: Ensure all the elements in the schema are generated even if the content is empty, and use the language specified in the input (preserve ambiguous terms such as names of entities and abbreviations in their original language for precision).
+  Output: Give your output in JSON format. Ensure all the elements in the schema are generated even if the content is empty, and use the language specified in the input (preserve ambiguous terms such as names of entities and abbreviations in their original language for precision).
 jinja_args:
   - outline
   - slide_description
